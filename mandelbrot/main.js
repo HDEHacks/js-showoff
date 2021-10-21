@@ -17,6 +17,7 @@ window.onload = function () {
 			const canvasDimensions = { height: resolution.height, width: resolution.width };
 			canvas.height = canvasDimensions.height;
 			canvas.width = canvasDimensions.width;
+                        canvas.style.width = "100%"
 
             const dimensions = {
 		    height: canvasDimensions.height, 
