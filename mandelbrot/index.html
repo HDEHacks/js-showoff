@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+        <head>
+                <meta charset="UTF-8" />
+                <title>Mandelbrot Visualizer</title>
+        </head>
+
+        <body>
+            <h1>Mandelbrot Set</h1>
+            <form id="form">
+                <fieldset>
+                        <legend>Bounding Box:</legend>
+                        <label for="xmin">X minimum:</label>
+                        <input type="number" id="xmin" min="-2.5" max="1.0" step="any" value="-2.2"/>
+                        <label for="xmax">X maximum:</label>
+                        <input type="number" id="xmax" min="-2.5" max="1.0" step="any" value="0.8"/>
+                        <label for="ymin">Y minimum:</label>
+                        <input type="number" id="ymin" min="-1.5" max="1.5" step="any" value="-1.2"/>
+                        <label for="ymax">Y maximum:</label>
+                        <input type="number" id="ymax" min="-1.5" max="1.5" step="any" value="1.2"/>
+                </fieldset>
+                <fieldset>
+                        <legend>Resolution:</legend>
+                        <input type="radio" id="720p" name="resolution" value="720p">
+                        <label for="720p">720p</label>
+                        <input type="radio" id="1080p" name="resolution" value="1080p" checked="true">
+                        <label for="1080p">1080p</label>
+                        <input type="radio" id="4k" name="resolution" value="4k">
+                        <label for="4k">4k</label>
+                        <input type="radio" id="8k" name="resolution" value="8k">
+                        <label for="8k">8k</label>
+                </fieldset>
+                <fieldset>
+                        <legend>Computation:</legend>
+                        <label for="iter">Iterations:</label>
+                        <input type="number" id="iter" min="0" value="50"/>
+                        <label for="worker">Number of Worker Threads:</label>
+                        <input type="number" id="worker" min="0" step="1" value="2"/>
+                        <input type="submit" id="submit" value="Draw" />
+                </fieldset>
+        </form>
+        <canvas id="cv" height="4320" width="7680"></canvas>
+
+	<script src="main.js"></script>
+	</body>
+</html>
