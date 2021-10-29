@@ -30,7 +30,7 @@ window.onload = function () {
 	    };
 
             const numWorkers = +document.getElementById("worker").value;
-            const continuation = RepeatContinuation(numWorkers, _ => _, () => {subButton.disabled = false;});
+            const continuation = RepeatContinuation(numWorkers - 1, _ => _, () => {subButton.disabled = false;});
 		
             for(let w = 0; w < numWorkers; w += 1) {
                 const worker = new Worker('worker.js');
