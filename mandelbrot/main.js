@@ -30,20 +30,40 @@ window.onload = function () {
 	    };
 
             const numWorkers = +document.getElementById("worker").value;
+            const continuation = RepeatContinuation(numWorkers, _ => _, () => {subButton.disabled = false;});
+		
             for(let w = 0; w < numWorkers; w += 1) {
                 const worker = new Worker('worker.js');
-                worker.onmessage = receiveMessage(dimensions, ctx, subButton);
+                worker.onmessage = receiveMessage(dimensions, ctx, continuation);
                 worker.postMessage({dimensions, teamwork: {workerN: w, skip: numWorkers}});
             }
             event.preventDefault();
 	});
 }
 
-function receiveMessage(dimensions, ctx, subButton){ return function({data: {imageData, ln, done}}) {
+function RepeatContinuation(repetitions, f, final) {
+    let repetitionsLeft = repetitions;
+    function done() {return repetitionsLeft == 0;}
+    function decrement() {repetitionsLeft -=1; }
+
+    return {
+        call: function() {
+            if(done()) {
+                final();
+            } else {
+                f();
+                decrement();
+            }
+            return;
+        }
+    }
+}
+
+function receiveMessage(dimensions, ctx, continuation){ return function({data: {imageData, ln, done}}) {
     if (imageData) {
 		renderRow(dimensions, ctx, ln, imageData);
 	} else if (done) {
-		subButton.disabled = false;
+		continuation.call();
 	}
 }}
 
