@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Your friend.</title>
+    <style>
+        canvas {
+            border: black solid 1px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Your friend.</h1>
+    <canvas id="cv" height="640" width="640"></canvas>
+    <!-- -->
+<script>
+    "use strict";
+    const h = 32;
+    const w = 32;
+    const scale = 20;
+    let state = {board: [], lilGuyX: 0, lilGuyY: 0, canvas: null, ctx: null};
+
+    async function draw(state) {
+        state.ctx.fillStyle = "white";
+        state.ctx.fillRect(0, 0, scale*h, scale*w);
+
+        state.ctx.fillStyle = "red";
+        state.board.forEach(({x, y}) => {
+            state.ctx.fillRect(x*scale + 1, y*scale + 1, scale - 2, scale - 2);
+        });
+
+        state.ctx.fillStyle = 'lime';
+        state.ctx.fillRect(state.lilGuyX*scale + 1, state.lilGuyY*scale + 1, scale - 2, scale - 2);
+    }
+
+    async function friendLogic(state) {
+        if (state.board.length === 0) return;
+        
+        // update logic
+        const {lilGuyX: myX, lilGuyY: myY} = state;
+
+        const found = state.board.findIndex(({x,y}) => x === myX && y === myY);
+        if (found >= 0) {
+            state.board = state.board.slice(0, found).concat(state.board.slice(found + 1));
+        }
+
+        const command = await friendFindFood(state);
+        switch (command.command) {
+            case 'moveme':
+                state.lilGuyX += command.refs.dx;
+                state.lilGuyY += command.refs.dy;
+                break;
+        }
+
+        draw(state);
+    }
+
+    async function friendFindFood(state) {
+        if (state.board.length === 0) return {command: 'none'};
+        const {lilGuyX: myX, lilGuyY: myY} = state;
+
+        // Get closest
+        let closest = state.board[0];
+        state.board.forEach(({x, y}) => {
+            if (Math.abs(myX - x) + Math.abs(myY - y) < Math.abs(myX - closest.x) + Math.abs(myY - closest.y)) {
+                closest = {x, y};
+            }
+        });
+
+        // find direction to closest
+        const gx = state.lilGuyX - closest.x;
+        const gy = state.lilGuyY - closest.y;
+        const dx = gx === 0 ? 0 : (gx > 0 ? -1 : 1);
+        const dy = gy === 0 ? 0 : (gy > 0 ? -1 : 1);
+
+        return {command: 'moveme', refs: {dx, dy}};
+    }
+
+    async function addFruit(event) {
+        const _x = event.clientX - state.canvas.getBoundingClientRect().x;
+        const _y = event.clientY - state.canvas.getBoundingClientRect().y;
+        const normedX = Math.floor(_x / scale);
+        const normedY = Math.floor(_y / scale);
+
+        const toPlace = {x: normedX, y: normedY};
+        const found = state.board.findIndex(({x,y}) => x === normedX && y === normedY);
+
+        state.board = found >= 0
+            ? state.board.slice(0, found).concat(state.board.slice(found + 1))
+            : state.board.slice().concat([toPlace]);
+
+        draw(state);
+    }
+
+window.onload = function () {
+    state.canvas = document.getElementById("cv");
+    state.ctx = state.canvas.getContext("2d");
+    document.getElementById("cv").addEventListener("mousedown", addFruit);
+    setInterval(friendLogic, 100, state);
+    draw(state);
+}
+</script>
+</body>
+</html>
